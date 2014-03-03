@@ -293,21 +293,19 @@ static NSInteger ccbAnimationManagerID = 0;
     }  
 }
 
-- (void) setFirstFrameForNode:(CCNode*)node sequenceProperty:(CCBSequenceProperty*)seqProp tweenDuration:(float)tweenDuration
+- (void) setFrameForNode:(CCNode*)node sequenceProperty:(CCBSequenceProperty*)seqProp tweenDuration:(float)tweenDuration keyFrame:(int)kf
 {
     NSArray* keyframes = [seqProp keyframes];
     
-    if (keyframes.count == 0)
-    {
-        // Use base value (no animation)
+    if ([keyframes count] == 0) {
+        // No Animation, Set Base Value
         id baseValue = [self baseValueForNode:node propertyName:seqProp.name];
         NSAssert1(baseValue, @"No baseValue found for property (%@)", seqProp.name);
         [self setAnimatedProperty:seqProp.name forNode:node toValue:baseValue tweenDuration:tweenDuration];
-    }
-    else
-    {
-        // Use first keyframe
-        CCBKeyframe* keyframe = [keyframes objectAtIndex:0];
+    } else {
+        // Use Specified KeyFrame (Not KeyFrame Time)
+        
+        CCBKeyframe* keyframe = [keyframes objectAtIndex:kf];
         [self setAnimatedProperty:seqProp.name forNode:node toValue:keyframe.value tweenDuration:tweenDuration];
     }
 }
@@ -499,6 +497,7 @@ static NSInteger ccbAnimationManagerID = 0;
     // Stop actions associated with this animation manager
     [self removeActionsByTag:animationManagerId fromNode:rootNode];
     
+    // Contains all Sequence Propertys / Keyframe
     for (NSValue* nodePtr in nodeSequences)
     {
         CCNode* node = [nodePtr pointerValue];
@@ -517,7 +516,7 @@ static NSInteger ccbAnimationManagerID = 0;
             CCBSequenceProperty* seqProp = [seqNodeProps objectForKey:propName];
             [seqNodePropNames addObject:propName];
             
-            [self setFirstFrameForNode:node sequenceProperty:seqProp tweenDuration:tweenDuration];
+            [self setFrameForNode:node sequenceProperty:seqProp tweenDuration:0 keyFrame:0];
             [self runActionsForNode:node sequenceProperty:seqProp tweenDuration:tweenDuration];
         }
         
@@ -633,11 +632,30 @@ static NSInteger ccbAnimationManagerID = 0;
     CCLOG(@"nodeSequences: %@", nodeSequences);
 }
 
-// Frame Control
-- (void) jumpToKeyFrame:(int) frame {
+- (void)jumpToTime:(float)time {
+    // 1. Find 'Closest KeyFrame Time' for each Node in Animation
     
-    // Stop actions associated with this animation manager
-    [self removeActionsByTag:animationManagerId fromNode:rootNode];
+    // Contains all Sequence Propertys / Keyframe
+    for (NSValue* nodePtr in nodeSequences)
+    {
+        CCNode* node = [nodePtr pointerValue];
+        
+        // Stop actions associated with this animation manager
+        [self removeActionsByTag:animationManagerId fromNode:node];
+        
+        NSDictionary* seqs = [nodeSequences objectForKey:nodePtr];
+        NSDictionary* seqNodeProps = [seqs objectForKey:[NSNumber numberWithInt:autoPlaySequenceId]];
+        
+        // Reset nodes that have sequence node properties, and run actions on them
+        for (NSString* propName in seqNodeProps)
+        {
+            CCBSequenceProperty* seqProp = [seqNodeProps objectForKey:propName];
+            CCLOG(@"%@",seqProp);
+            
+            [self setFrameForNode:node sequenceProperty:seqProp tweenDuration:0 keyFrame:(int)time];
+        }
+        
+    }
 }
 
 @end

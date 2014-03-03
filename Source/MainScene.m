@@ -14,12 +14,21 @@
 {
     _animationManager = _simple.userObject;
     [_animationManager debug];
+    _time = 0;
 }
 
 - (void) pressedMove:(id)sender
 {
     CCLOG(@"pressedMove");
     [_animationManager runAnimationsForSequenceNamed:@"move" tweenDuration:0];
+    _time = 0;
+}
+
+- (void) pressedKF:(id)sender
+{
+    CCLOG(@"pressedKF");
+    [_animationManager jumpToTime:_time];
+    _time+=1;
 }
 
 @end

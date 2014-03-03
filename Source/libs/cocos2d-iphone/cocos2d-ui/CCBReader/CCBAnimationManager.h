@@ -81,7 +81,7 @@
 - (void) debug;
 
 // Frame Control
-- (void) jumpToKeyFrame:(int) frame;
+- (void)jumpToTime:(float)time;
 
 @end
 
