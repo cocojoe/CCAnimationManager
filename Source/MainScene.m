@@ -14,21 +14,42 @@
 {
     _animationManager = _simple.userObject;
     [_animationManager debug];
-    _time = 0;
+    
+    [self pressedReset:nil];
 }
 
 - (void) pressedMove:(id)sender
 {
     CCLOG(@"pressedMove");
     [_animationManager runAnimationsForSequenceNamed:@"move" tweenDuration:0];
-    _time = 0;
 }
 
 - (void) pressedKF:(id)sender
 {
-    CCLOG(@"pressedKF");
+    CCLOG(@"pressedKF: %d",_keyFrame);
+    [_animationManager jumpToKeyFrame:_keyFrame];
+    if(_keyFrame==5)
+        _keyFrame = 0;
+    else
+        _keyFrame++;
+}
+
+
+- (void) pressedTime:(id)sender
+{
+    CCLOG(@"pressedTime: %f",_time);
     [_animationManager jumpToTime:_time];
-    _time+=1;
+    if(_time==4)
+        _time = 0;
+    else
+        _time+=0.5f;
+}
+
+- (void) pressedReset:(id)sender
+{
+    CCLOG(@"pressedReset:");
+    _keyFrame = 0;
+    _time     = 0;
 }
 
 @end

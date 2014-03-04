@@ -84,24 +84,6 @@
 									<key>name</key>
 									<string>position</string>
 									<key>time</key>
-									<real>1.3666666746139526</real>
-									<key>type</key>
-									<integer>3</integer>
-									<key>value</key>
-									<array>
-										<real>100</real>
-										<real>36.666667938232422</real>
-									</array>
-								</dict>
-								<dict>
-									<key>easing</key>
-									<dict>
-										<key>type</key>
-										<integer>1</integer>
-									</dict>
-									<key>name</key>
-									<string>position</string>
-									<key>time</key>
 									<real>2</real>
 									<key>type</key>
 									<integer>3</integer>
@@ -190,7 +172,7 @@
 						<key>value</key>
 						<array>
 							<real>100</real>
-							<real>36.666667938232422</real>
+							<real>100</real>
 							<integer>0</integer>
 							<integer>0</integer>
 							<integer>0</integer>
@@ -374,7 +356,7 @@
 			<key>offset</key>
 			<real>0.0</real>
 			<key>position</key>
-			<real>1.3666666746139526</real>
+			<real>2</real>
 			<key>resolution</key>
 			<real>30</real>
 			<key>scale</key>

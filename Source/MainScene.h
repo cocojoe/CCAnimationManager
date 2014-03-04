@@ -11,6 +11,7 @@
 @interface MainScene : CCNode {
     CCBAnimationManager* _animationManager;
     CCNode* _simple;
+    int _keyFrame;
     float _time;
 }
 

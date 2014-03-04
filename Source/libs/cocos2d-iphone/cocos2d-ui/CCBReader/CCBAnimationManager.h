@@ -80,7 +80,8 @@
 
 - (void) debug;
 
-// Frame Control
+// Fine Controls
+- (void)jumpToKeyFrame:(int)keyFrame;
 - (void)jumpToTime:(float)time;
 
 @end
