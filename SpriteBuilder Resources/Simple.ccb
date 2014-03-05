@@ -190,6 +190,24 @@
 									<key>name</key>
 									<string>position</string>
 									<key>time</key>
+									<real>3.7333333492279053</real>
+									<key>type</key>
+									<integer>3</integer>
+									<key>value</key>
+									<array>
+										<real>0.0</real>
+										<real>26.666664123535156</real>
+									</array>
+								</dict>
+								<dict>
+									<key>easing</key>
+									<dict>
+										<key>type</key>
+										<integer>1</integer>
+									</dict>
+									<key>name</key>
+									<string>position</string>
+									<key>time</key>
 									<real>4</real>
 									<key>type</key>
 									<integer>3</integer>
@@ -287,8 +305,8 @@
 						<string>Position</string>
 						<key>value</key>
 						<array>
-							<real>0.0</real>
-							<real>26.666664123535156</real>
+							<real>100</real>
+							<real>100</real>
 							<integer>0</integer>
 							<integer>0</integer>
 							<integer>0</integer>
@@ -348,9 +366,9 @@
 						<string>Color3</string>
 						<key>value</key>
 						<array>
-							<real>0.12161929905414581</real>
 							<real>1</real>
-							<real>0.0</real>
+							<real>1</real>
+							<real>1</real>
 							<real>1</real>
 						</array>
 					</dict>
@@ -482,9 +500,9 @@
 			<key>name</key>
 			<string>move</string>
 			<key>offset</key>
-			<real>1.3817708492279053</real>
+			<real>1.5380208492279053</real>
 			<key>position</key>
-			<real>3.7333333492279053</real>
+			<real>2</real>
 			<key>resolution</key>
 			<real>30</real>
 			<key>scale</key>
