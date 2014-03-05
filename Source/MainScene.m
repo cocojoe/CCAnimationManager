@@ -42,7 +42,7 @@
     if(_time==4)
         _time = 0;
     else
-        _time+=0.5f;
+        _time+=0.25f;
 }
 
 - (void) pressedReset:(id)sender

@@ -302,8 +302,7 @@ static NSInteger ccbAnimationManagerID = 0;
         id baseValue = [self baseValueForNode:node propertyName:seqProp.name];
         NSAssert1(baseValue, @"No baseValue found for property (%@)", seqProp.name);
         [self setAnimatedProperty:seqProp.name forNode:node toValue:baseValue tweenDuration:tweenDuration];
-        
-    } else {
+    } else if (kf<[keyframes count]){
         // Use Specified KeyFrame
         CCBKeyframe* keyframe = [keyframes objectAtIndex:kf];
         [self setAnimatedProperty:seqProp.name forNode:node toValue:keyframe.value tweenDuration:tweenDuration];
@@ -676,6 +675,11 @@ static NSInteger ccbAnimationManagerID = 0;
             CCBSequenceProperty* seqProp = [seqNodeProps objectForKey:propName];
             NSMutableArray* keyFrames    = [self findFrames:time sequenceProperty:seqProp];
             
+            // No KeyFrames Found
+            if([keyFrames count]==0) {
+                 continue;
+            }
+            
             // Time Matches Exact KeyFrame (Set Node From Key Frame)
             if([keyFrames count]==1) {
                 [self setKeyFrameForNode:node sequenceProperty:seqProp tweenDuration:0 keyFrame:[[keyFrames objectAtIndex:0] intValue]];
@@ -686,7 +690,7 @@ static NSInteger ccbAnimationManagerID = 0;
                 CCBKeyframe* currentKeyFrame = [seqProp.keyframes objectAtIndex:[[keyFrames objectAtIndex:0] unsignedIntegerValue]];
                 CCBKeyframe* nextKeyFrame = [seqProp.keyframes objectAtIndex:[[keyFrames objectAtIndex:1] unsignedIntegerValue]];
                 
-                float timeFoward = nextKeyFrame.time - time;
+                float timeFoward = time - currentKeyFrame.time;
                 
                 // Fast-Forward to Time Point
                 CCLOG(@"Time Fast Foward: %f", timeFoward);
@@ -697,7 +701,10 @@ static NSInteger ccbAnimationManagerID = 0;
                                                              beginKeyFrame:[[keyFrames objectAtIndex:0] intValue]
                                                                endKeyFrame:[[keyFrames objectAtIndex:1] intValue]];
                 
+                // Fast Forward
                 [node runAction:animSequence];
+                [animSequence update:timeFoward];
+                [animSequence stop];
                 
             }
         }
