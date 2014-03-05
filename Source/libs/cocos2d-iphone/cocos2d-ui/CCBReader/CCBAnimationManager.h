@@ -38,7 +38,7 @@
 
 #pragma mark Action Manager
 
-@interface CCBAnimationManager : NSObject
+@interface CCBAnimationManager : NSObject <CCSchedulerTarget>
 {
     NSMutableArray* sequences;
     NSMutableDictionary* nodeSequences;
@@ -55,6 +55,11 @@
     CCBSequence* runningSequence;
     
     void (^block)(id sender);
+    
+    CCScheduler* _scheduler;
+
+    NSMutableArray* _currentActions;
+    
 }
 @property (nonatomic,readonly) NSMutableArray* sequences;
 @property (nonatomic,assign) int autoPlaySequenceId;
@@ -64,6 +69,7 @@
 @property (nonatomic,strong) NSObject<CCBAnimationManagerDelegate>* delegate;
 @property (unsafe_unretained, nonatomic,readonly) NSString* runningSequenceName;
 @property (nonatomic,readonly) NSString* lastCompletedSequenceName;
+
 
 - (CGSize) containerSize:(CCNode*)node;
 
@@ -76,7 +82,7 @@
 - (void) runAnimationsForSequenceNamed:(NSString*)name;
 - (void) runAnimationsForSequenceId:(int)seqId tweenDuration:(float) tweenDuration;
 
--(void) setCompletedAnimationCallbackBlock:(void(^)(id sender))b;
+- (void) setCompletedAnimationCallbackBlock:(void(^)(id sender))b;
 
 - (void) debug;
 

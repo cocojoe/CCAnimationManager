@@ -13,7 +13,7 @@
 - (void) didLoadFromCCB
 {
     _animationManager = _simple.userObject;
-    [_animationManager debug];
+    //[_animationManager debug];
     
     [self pressedReset:nil];
 }

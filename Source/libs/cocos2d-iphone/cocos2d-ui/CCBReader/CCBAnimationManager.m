@@ -58,9 +58,22 @@ static NSInteger ccbAnimationManagerID = 0;
     sequences = [[NSMutableArray alloc] init];
     nodeSequences = [[NSMutableDictionary alloc] init];
     baseValues = [[NSMutableDictionary alloc] init];
+
+    _scheduler = [[CCDirector sharedDirector] scheduler];
+    [_scheduler scheduleTarget:self];
+    [_scheduler setPaused:NO target:self];
+    
+    // Current Actions
+    _currentActions = [[NSMutableArray alloc] init];
     
     return self;
 }
+
+-(NSInteger)priority
+{
+	return 1;
+}
+
 
 - (CGSize) containerSize:(CCNode*)node
 {
@@ -421,8 +434,11 @@ static NSInteger ccbAnimationManagerID = 0;
         
         CCActionSequence* seq = [CCActionSequence actionWithArray:actions];
         seq.tag = animationManagerId;
-        [node runAction:seq];
+        [seq startWithTarget:node];
+        //[node runAction:seq];
+        [_currentActions addObject:seq];
     }
+    
 }
 
 - (id) actionForCallbackChannel:(CCBSequenceProperty*) channel
@@ -688,7 +704,6 @@ static NSInteger ccbAnimationManagerID = 0;
                 [self setKeyFrameForNode:node sequenceProperty:seqProp tweenDuration:0 keyFrame:[[keyFrames objectAtIndex:0] intValue]];
                 
                 CCBKeyframe* currentKeyFrame = [seqProp.keyframes objectAtIndex:[[keyFrames objectAtIndex:0] unsignedIntegerValue]];
-                CCBKeyframe* nextKeyFrame = [seqProp.keyframes objectAtIndex:[[keyFrames objectAtIndex:1] unsignedIntegerValue]];
                 
                 float timeFoward = time - currentKeyFrame.time;
                 
@@ -702,7 +717,7 @@ static NSInteger ccbAnimationManagerID = 0;
                                                                endKeyFrame:[[keyFrames objectAtIndex:1] intValue]];
                 
                 // Fast Forward
-                [node runAction:animSequence];
+                [animSequence startWithTarget:node];
                 [animSequence update:timeFoward];
                 [animSequence stop];
                 
@@ -766,6 +781,13 @@ endFindFrames:
     CCActionSequence* seq = [CCActionSequence actionWithArray:actions];
     seq.tag = animationManagerId;
     return seq;
+}
+
+-(void) update:(CCTime)delta {
+    for(CCAction *action in _currentActions) {
+        //CCLOG(@"(update) delta: %f",delta);
+        [action step:delta]; // Speed Modifier
+    }
 }
 
 @end

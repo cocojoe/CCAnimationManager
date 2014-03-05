@@ -10,11 +10,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "Source/libs/cocos2d-iphone/cocos2d-ui/CCBReader/CCBAnimationManager.m"
-            timestampString = "415708880.989774"
+            timestampString = "415729159.633819"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "813"
-            endingLineNumber = "813"
+            startingLineNumber = "835"
+            endingLineNumber = "835"
             landmarkName = "-initWithDuration:angle:"
             landmarkType = "5">
          </BreakpointContent>
