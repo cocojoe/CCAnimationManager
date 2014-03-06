@@ -510,10 +510,41 @@
 {
 	if( (self=[super initWithDuration: t]) ){
 		_dstAngleX = aX;
-    _dstAngleY = aY;
-  }
+        _dstAngleY = aY;
+        _rotateX   = YES;
+        _rotateY   = YES;
+    }
 	return self;
 }
+
++(id) actionWithDuration: (CCTime) t angleX:(float) aX
+{
+	return [[self alloc] initWithDuration:t angleX:aX];
+}
+
+-(id) initWithDuration: (CCTime) t angleX:(float) aX
+{
+	if( (self=[super initWithDuration: t]) ){
+		_dstAngleX = aX;
+        _rotateX   = YES;
+    }
+	return self;
+}
+
++(id) actionWithDuration: (CCTime) t angleY:(float) aY
+{
+	return [[self alloc] initWithDuration:t angleY:aY];
+}
+
+-(id) initWithDuration: (CCTime) t angleY:(float) aY
+{
+	if( (self=[super initWithDuration: t]) ){
+		_dstAngleY = aY;
+        _rotateY   = YES;
+    }
+	return self;
+}
+
 
 -(id) copyWithZone: (NSZone*) zone
 {
@@ -525,7 +556,7 @@
 {
 	[super startWithTarget:aTarget];
 
-  //Calculate X
+    //Calculate X
 	_startAngleX = [_target rotationalSkewX];
 	if (_startAngleX > 0)
 		_startAngleX = fmodf(_startAngleX, 360.0f);
@@ -561,8 +592,10 @@
     }
     else
     {
-        [_target setRotationalSkewX: _startAngleX + _diffAngleX * t];
-        [_target setRotationalSkewY: _startAngleY + _diffAngleY * t];
+        if(_rotateX)
+            [_target setRotationalSkewX: _startAngleX + _diffAngleX * t];
+        if(_rotateY)
+            [_target setRotationalSkewY: _startAngleY + _diffAngleY * t];
     }
 }
 @end

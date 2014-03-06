@@ -158,15 +158,15 @@ static NSInteger ccbAnimationManagerID = 0;
     
     if ([name isEqualToString:@"rotation"])
     {
-        return [CCBRotateTo actionWithDuration:duration angle:[kf1.value floatValue]];
+        return [CCActionRotateTo actionWithDuration:duration angle:[kf1.value floatValue]];
     }
     else if ([name isEqualToString:@"rotationalSkewX"])
     {
-        return [CCBRotateXTo actionWithDuration:duration angle:[kf1.value floatValue]];
+        return [CCActionRotateTo actionWithDuration:duration angleX:[kf1.value floatValue]];
     }
     else if ([name isEqualToString:@"rotationalSkewY"])
     {
-        return [CCBRotateYTo actionWithDuration:duration angle:[kf1.value floatValue]];
+        return [CCActionRotateTo actionWithDuration:duration angleY:[kf1.value floatValue]];
     }
     else if ([name isEqualToString:@"opacity"])
     {
@@ -190,7 +190,7 @@ static NSInteger ccbAnimationManagerID = 0;
     }
     else if ([name isEqualToString:@"spriteFrame"])
     {
-        return [CCActionSequence actionOne:[CCActionDelay actionWithDuration:duration] two:[CCBSetSpriteFrame actionWithSpriteFrame:kf1.value]];
+        return [CCActionSequence actionOne:[CCActionDelay actionWithDuration:duration] two:[CCActionSpriteFrame actionWithSpriteFrame:kf1.value]];
     }
     else if ([name isEqualToString:@"position"])
     {
@@ -497,7 +497,7 @@ static NSInteger ccbAnimationManagerID = 0;
         float pan = [[keyframe.value objectAtIndex:2] floatValue];
         float gain = [[keyframe.value objectAtIndex:3] floatValue];
         
-        [actions addObject:[CCBSoundEffect actionWithSoundFile:soundFile pitch:pitch pan:pan gain:gain]];
+        [actions addObject:[CCActionSoundEffect actionWithSoundFile:soundFile pitch:pitch pan:pan gain:gain]];
     }
     
     if (!actions.count) return NULL;
@@ -790,158 +790,5 @@ endFindFrames:
     }
 }
 
-@end
-
-#pragma mark Custom Actions
-
-@implementation CCBSetSpriteFrame
-+(id) actionWithSpriteFrame: (CCSpriteFrame*) sf;
-{
-	return [[self alloc]initWithSpriteFrame:sf];
-}
-
--(id) initWithSpriteFrame: (CCSpriteFrame*) sf;
-{
-	if( (self=[super init]) )
-		spriteFrame = sf;
-    
-	return self;
-}
-
-
--(id) copyWithZone: (NSZone*) zone
-{
-	CCSpriteFrame *copy = [[[self class] allocWithZone: zone] initWithSpriteFrame:spriteFrame];
-	return copy;
-}
-
--(void) update:(CCTime)time
-{
-	((CCSprite *)self.target).spriteFrame = spriteFrame;
-}
-
-@end
-
-
-@implementation CCBRotateTo
-
-+(id) actionWithDuration:(CCTime)duration angle:(float)angle
-{
-    return [[self alloc] initWithDuration:duration angle:angle];
-}
-
--(id) initWithDuration:(CCTime)duration angle:(float)angle
-{
-    self = [super initWithDuration:duration];
-    if (!self) return NULL;
-    
-    dstAngle_ = angle;
-    
-    return self;
-}
-
-- (id) copyWithZone:(NSZone *)zone
-{
-    CCAction *copy = [[[self class] allocWithZone: zone] initWithDuration:[self duration] angle:dstAngle_];
-	return copy;
-}
-
--(void) startWithTarget:(CCNode *)aTarget
-{
-	[super startWithTarget:aTarget];
-    startAngle_ = [(CCNode *)self.target rotation];
-    diffAngle_ = dstAngle_ - startAngle_;
-}
-
--(void) update: (CCTime) t
-{
-	[(CCNode *)self.target setRotation: startAngle_ + diffAngle_ * t];
-}
-
-@end
-
-
-@implementation CCBRotateXTo
-
--(void) startWithTarget:(CCNode *)aTarget
-{
-    _originalTarget = _target = aTarget;
-    
-    _elapsed = 0.0f;
-	_firstTick = YES;
-    
-    startAngle_ = [self.target rotationalSkewX];
-    diffAngle_ = dstAngle_ - startAngle_;
-}
-
--(void) update: (CCTime) t
-{
-	[self.target setRotationalSkewX: startAngle_ + diffAngle_ * t];
-}
-
-@end
-
-
-@implementation CCBRotateYTo
-
--(void) startWithTarget:(CCNode *)aTarget
-{
-	_originalTarget = _target = aTarget;
-    
-    _elapsed = 0.0f;
-	_firstTick = YES;
-    
-    startAngle_ = [self.target rotationalSkewY];
-    diffAngle_ = dstAngle_ - startAngle_;
-}
-
--(void) update: (CCTime) t
-{
-	[self.target setRotationalSkewY: startAngle_ + diffAngle_ * t];
-}
-
-@end
-
-
-@implementation CCBSoundEffect
-
-+(id) actionWithSoundFile:(NSString*)f pitch:(float)pi pan:(float) pa gain:(float)ga
-{
-    return [[CCBSoundEffect alloc] initWithSoundFile:f pitch:pi pan:pa gain:ga];
-}
-
--(id) initWithSoundFile:(NSString*)file pitch:(float)pi pan:(float) pa gain:(float)ga
-{
-    self = [super init];
-    if (!self) return NULL;
-    
-    soundFile = [file copy];
-    pitch = pi;
-    pan = pa;
-    gain = ga;
-    
-    return self;
-}
-
-
-- (void) update:(CCTime)time
-{
-    [[OALSimpleAudio sharedInstance] playEffect:soundFile volume:gain pitch:pitch pan:pan loop:NO];
-}
-
-@end
-
-@implementation CCActionEaseInstant
--(void) update: (CCTime) t
-{
-    if (t < 0)
-    {
-        [self.inner update:0];
-    }
-    else
-    {
-        [self.inner update:1];
-    }
-}
 @end
 
