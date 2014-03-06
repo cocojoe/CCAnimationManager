@@ -59,12 +59,14 @@ static NSInteger ccbAnimationManagerID = 0;
     nodeSequences = [[NSMutableDictionary alloc] init];
     baseValues = [[NSMutableDictionary alloc] init];
 
+    // Setup Scheduler
     _scheduler = [[CCDirector sharedDirector] scheduler];
     [_scheduler scheduleTarget:self];
     [_scheduler setPaused:NO target:self];
     
-    // Current Actions
+    // Current Sequence Actions
     _currentActions = [[NSMutableArray alloc] init];
+    _speed = 1.0f;
     
     return self;
 }
@@ -553,9 +555,12 @@ static NSInteger ccbAnimationManagerID = 0;
     
     // Make callback at end of sequence
     CCBSequence* seq = [self sequenceFromSequenceId:seqId];
-    CCAction* completeAction = [CCActionSequence actionOne:[CCActionDelay actionWithDuration:seq.duration+tweenDuration] two:[CCActionCallFunc actionWithTarget:self selector:@selector(sequenceCompleted)]];
+    CCActionSequence* completeAction = [CCActionSequence actionOne:[CCActionDelay actionWithDuration:seq.duration+tweenDuration] two:[CCActionCallFunc actionWithTarget:self selector:@selector(sequenceCompleted)]];
     completeAction.tag = animationManagerId;
-    [rootNode runAction:completeAction];
+    //[rootNode runAction:completeAction];
+
+    [completeAction startWithTarget:rootNode];
+    [_currentActions addObject:completeAction];
     
     // Playback callbacks and sounds
     if (seq.callbackChannel)
@@ -655,7 +660,7 @@ static NSInteger ccbAnimationManagerID = 0;
         CCNode* node = [nodePtr pointerValue];
         
         // Stop actions associated with this animation manager
-        [self removeActionsByTag:animationManagerId fromNode:node];
+        [self clearNodeActions];
         
         NSDictionary* seqs = [nodeSequences objectForKey:nodePtr];
         NSDictionary* seqNodeProps = [seqs objectForKey:[NSNumber numberWithInt:autoPlaySequenceId]];
@@ -680,7 +685,7 @@ static NSInteger ccbAnimationManagerID = 0;
         CCNode* node = [nodePtr pointerValue];
         
         // Stop actions associated with this animation manager
-        [self removeActionsByTag:animationManagerId fromNode:node];
+        [self clearNodeActions];
         
         NSDictionary* seqs = [nodeSequences objectForKey:nodePtr];
         NSDictionary* seqNodeProps = [seqs objectForKey:[NSNumber numberWithInt:autoPlaySequenceId]];
@@ -784,10 +789,41 @@ endFindFrames:
 }
 
 -(void) update:(CCTime)delta {
-    for(CCAction *action in _currentActions) {
+    
+    NSArray *actionCopy = [_currentActions copy];
+    
+    for(CCAction *action in actionCopy) {
         //CCLOG(@"(update) delta: %f",delta);
-        [action step:delta]; // Speed Modifier
+        
+        [action step:delta*_speed]; // Speed Modifier
+        
+        if([action isDone])
+            [_currentActions removeObject:action];
     }
+    
+    //CCLOG(@"Actions: %d",(int)[_currentActions count]);
+}
+
+-(void) clearNodeActions {
+    
+    for(CCAction *action in _currentActions) {
+        [action stop];
+    }
+    
+    [_currentActions removeAllObjects];
+}
+
+
+-(void) reset {
+    [self jumpToKeyFrame:0];
+}
+
+-(void) play {
+     [_scheduler setPaused:NO target:self];
+}
+
+-(void) pause {
+    [_scheduler setPaused:YES target:self];
 }
 
 @end

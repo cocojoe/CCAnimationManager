@@ -59,6 +59,7 @@
     CCScheduler* _scheduler;
 
     NSMutableArray* _currentActions;
+    float _speed;
     
 }
 @property (nonatomic,readonly) NSMutableArray* sequences;
@@ -86,8 +87,11 @@
 
 - (void) debug;
 
-// Fine Controls
+// Test Controls
 - (void)jumpToKeyFrame:(int)keyFrame;
 - (void)jumpToTime:(float)time;
+- (void)reset;
+- (void)play;
+- (void)pause;
 
 @end

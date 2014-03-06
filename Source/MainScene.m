@@ -47,6 +47,7 @@
 
 - (void) pressedReset:(id)sender
 {
+    [_animationManager reset];
     CCLOG(@"pressedReset:");
     _keyFrame = 0;
     _time     = 0;
