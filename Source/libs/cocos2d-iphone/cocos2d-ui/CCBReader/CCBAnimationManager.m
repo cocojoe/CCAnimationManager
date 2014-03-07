@@ -258,7 +258,7 @@ static NSInteger ccbAnimationManagerID = 0;
         kf1.time = tweenDuration;
         kf1.easingType = kCCBKeyframeEasingLinear;
         
-        // Animate
+        // Animate @toto Add to current actions (needs tested)
         CCActionInterval* tweenAction = [self actionFromKeyframe0:NULL andKeyframe1:kf1 propertyName:name node:node];
         [node runAction:tweenAction];
     }
@@ -317,7 +317,9 @@ static NSInteger ccbAnimationManagerID = 0;
         id baseValue = [self baseValueForNode:node propertyName:seqProp.name];
         NSAssert1(baseValue, @"No baseValue found for property (%@)", seqProp.name);
         [self setAnimatedProperty:seqProp.name forNode:node toValue:baseValue tweenDuration:tweenDuration];
+        
     } else if (kf<[keyframes count]){
+        
         // Use Specified KeyFrame
         CCBKeyframe* keyframe = [keyframes objectAtIndex:kf];
         [self setAnimatedProperty:seqProp.name forNode:node toValue:keyframe.value tweenDuration:tweenDuration];
@@ -391,56 +393,64 @@ static NSInteger ccbAnimationManagerID = 0;
     }
 }
 
-- (void) removeActionsByTag:(NSInteger)tag fromNode:(CCNode*)node
+- (void) runActionsForNode:(CCNode*)node sequenceProperty:(CCBSequenceProperty*)seqProp tweenDuration:(float)tweenDuration startKeyFrame:(int)startFrame
 {
-    CCActionManager* am = [[CCDirector sharedDirector] actionManager];
     
-    while ([am getActionByTag:tag target:node])
-    {
-        [am removeActionByTag:tag target:node];
-    }
-}
-
-- (void) runActionsForNode:(CCNode*)node sequenceProperty:(CCBSequenceProperty*)seqProp tweenDuration:(float)tweenDuration
-{
+    // Grab Key Frames / Count
     NSArray* keyframes = [seqProp keyframes];
-    int numKeyframes = (int)keyframes.count;
+    int numKeyframes   = (int)keyframes.count;
     
-    if (numKeyframes > 1)
-    {
-        // Make an animation!
-        NSMutableArray* actions = [NSMutableArray array];
-            
-        CCBKeyframe* keyframeFirst = [keyframes objectAtIndex:0];
-        float timeFirst = keyframeFirst.time + tweenDuration;
-        
-        if (timeFirst > 0)
-        {
-            [actions addObject:[CCActionDelay actionWithDuration:timeFirst]];
-        }
-        
-        for (int i = 0; i < numKeyframes - 1; i++)
-        {
-            CCBKeyframe* kf0 = [keyframes objectAtIndex:i];
-            CCBKeyframe* kf1 = [keyframes objectAtIndex:i+1];
-            
-            CCActionInterval* action = [self actionFromKeyframe0:kf0 andKeyframe1:kf1 propertyName:seqProp.name node:node];
-            if (action)
-            {
-                // Apply easing
-                action = [self easeAction:action easingType:kf0.easingType easingOpt:kf0.easingOpt];
-                
-                [actions addObject:action];
-            }
-        }
-        
-        CCActionSequence* seq = [CCActionSequence actionWithArray:actions];
-        seq.tag = animationManagerId;
-        [seq startWithTarget:node];
-        //[node runAction:seq];
-        [_currentActions addObject:seq];
+    // Nothing to do - No Keyframes
+    if(numKeyframes<1)
+        return;
+    
+    // Action Sequence Builder
+    NSMutableArray* actions = [NSMutableArray array];
+    int nextFrame           = startFrame+1;
+    
+    if(nextFrame==numKeyframes)
+        nextFrame = 0; // Back to Start
+    
+    // Handle Tween
+    CCBKeyframe* keyframeFirst = [keyframes objectAtIndex:startFrame];
+    float timeFirst = keyframeFirst.time + tweenDuration;
+    
+    if (timeFirst > 0) {
+        [actions addObject:[CCActionDelay actionWithDuration:timeFirst]];
     }
     
+    // Check Next Frame
+    
+    // Reference KeyFrames to build action sequence
+    CCBKeyframe* kf0 = [keyframes objectAtIndex:startFrame];
+    CCBKeyframe* kf1 = [keyframes objectAtIndex:nextFrame];
+    
+    // Create Sequence
+    CCActionInterval* action = [self actionFromKeyframe0:kf0 andKeyframe1:kf1 propertyName:seqProp.name node:node];
+    
+    // Apply Easing Modifier (Optional)
+    if (action) {
+        action = [self easeAction:action easingType:kf0.easingType easingOpt:kf0.easingOpt];
+        [actions addObject:action];
+    }
+    
+    // Key Frame Duration
+    float duration = kf1.time - kf0.time;
+    
+    // Next KeyFrame Sequence
+    CCActionCallBlock* actionCallBack = [CCActionCallBlock actionWithBlock:^{
+        [self runActionsForNode:node sequenceProperty:seqProp tweenDuration:0 startKeyFrame:nextFrame];
+    }];
+                                         
+    CCActionSequence *nextKeyFrameSeq = [CCActionSequence actions:[CCActionDelay actionWithDuration:duration], actionCallBack, nil];
+    [_currentActions addObject:nextKeyFrameSeq];
+    
+    
+    // Create Sequence Added to Manager Sequence Array
+    CCActionSequence* seq = [CCActionSequence actionWithArray:actions];
+    seq.tag = animationManagerId;
+    [seq startWithTarget:node];
+    [_currentActions addObject:seq];
 }
 
 - (id) actionForCallbackChannel:(CCBSequenceProperty*) channel
@@ -511,30 +521,27 @@ static NSInteger ccbAnimationManagerID = 0;
 {
     NSAssert(seqId != -1, @"Sequence id %d couldn't be found",seqId);
     
-    // Stop actions associated with this animation manager
-    [self removeActionsByTag:animationManagerId fromNode:rootNode];
-    
     // Contains all Sequence Propertys / Keyframe
     for (NSValue* nodePtr in nodeSequences)
     {
         CCNode* node = [nodePtr pointerValue];
-        
-        // Stop actions associated with this animation manager
-        [self removeActionsByTag:animationManagerId fromNode:node];
         
         NSDictionary* seqs = [nodeSequences objectForKey:nodePtr];
         NSDictionary* seqNodeProps = [seqs objectForKey:[NSNumber numberWithInt:seqId]];
         
         NSMutableSet* seqNodePropNames = [NSMutableSet set];
         
-        // Reset nodes that have sequence node properties, and run actions on them
+        // Reset nodes that have sequence node properties, build first action sequence.
         for (NSString* propName in seqNodeProps)
         {
             CCBSequenceProperty* seqProp = [seqNodeProps objectForKey:propName];
             [seqNodePropNames addObject:propName];
             
+            // Reset Node State to First KeyFrame
             [self setKeyFrameForNode:node sequenceProperty:seqProp tweenDuration:0 keyFrame:0];
-            [self runActionsForNode:node sequenceProperty:seqProp tweenDuration:tweenDuration];
+            
+            // Build First Key Frame Sequence
+            [self runActionsForNode:node sequenceProperty:seqProp tweenDuration:tweenDuration startKeyFrame:0];
         }
         
         // Reset the nodes that may have been changed by other timelines
@@ -553,35 +560,30 @@ static NSInteger ccbAnimationManagerID = 0;
         }
     }
     
-    // Make callback at end of sequence
+    // End of Sequence Callback
     CCBSequence* seq = [self sequenceFromSequenceId:seqId];
-    CCActionSequence* completeAction = [CCActionSequence actionOne:[CCActionDelay actionWithDuration:seq.duration+tweenDuration] two:[CCActionCallFunc actionWithTarget:self selector:@selector(sequenceCompleted)]];
+    CCActionSequence* completeAction = [CCActionSequence
+                                        actionOne:[CCActionDelay actionWithDuration:seq.duration+tweenDuration]
+                                        two:[CCActionCallFunc actionWithTarget:self selector:@selector(sequenceCompleted)]];
     completeAction.tag = animationManagerId;
-    //[rootNode runAction:completeAction];
 
     [completeAction startWithTarget:rootNode];
     [_currentActions addObject:completeAction];
     
     // Playback callbacks and sounds
-    if (seq.callbackChannel)
-    {
+    if (seq.callbackChannel) {
         // Build sound actions for channel
         CCAction* action = [self actionForCallbackChannel:seq.callbackChannel];
-        if (action)
-        {
+        if (action) {
             action.tag = animationManagerId;
-            [self.rootNode runAction:action];
         }
     }
     
-    if (seq.soundChannel)
-    {
+    if (seq.soundChannel) {
         // Build sound actions for channel
         CCAction* action = [self actionForSoundChannel:seq.soundChannel];
-        if (action)
-        {
+        if (action) {
             action.tag = animationManagerId;
-            [self.rootNode runAction:action];
         }
     }
     
@@ -801,7 +803,7 @@ endFindFrames:
             [_currentActions removeObject:action];
     }
     
-    //CCLOG(@"Actions: %d",(int)[_currentActions count]);
+    CCLOG(@"Actions: %d",(int)[_currentActions count]);
 }
 
 -(void) clearNodeActions {

@@ -10,12 +10,12 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "Source/libs/cocos2d-iphone/cocos2d-ui/CCBReader/CCBAnimationManager.m"
-            timestampString = "415801029.59485"
+            timestampString = "415902173.306238"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "510"
-            endingLineNumber = "510"
-            landmarkName = "-runAnimationsForSequenceId:tweenDuration:"
+            startingLineNumber = "607"
+            endingLineNumber = "607"
+            landmarkName = "-sequenceCompleted"
             landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>
@@ -26,12 +26,12 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "Source/libs/cocos2d-iphone/cocos2d-ui/CCBReader/CCBAnimationManager.m"
-            timestampString = "415801029.59485"
+            timestampString = "415901785.27216"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "605"
-            endingLineNumber = "605"
-            landmarkName = "-sequenceCompleted"
+            startingLineNumber = "398"
+            endingLineNumber = "398"
+            landmarkName = "-runActionsForNode:sequenceProperty:tweenDuration:startKeyFrame:"
             landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>

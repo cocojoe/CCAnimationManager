@@ -30,7 +30,7 @@
 @interface CCBSequence : NSObject
 
 @property (nonatomic,assign) float duration;
-@property (nonatomic,copy) NSString* name;
+@property (nonatomic,copy)   NSString* name;
 @property (nonatomic,assign) int sequenceId;
 @property (nonatomic,assign) int chainedSequenceId;
 
