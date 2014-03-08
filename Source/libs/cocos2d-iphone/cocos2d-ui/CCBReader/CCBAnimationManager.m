@@ -35,6 +35,7 @@
 #import "CCBReader_Private.h"
 #import "CCActionManager.h"
 
+// Unique Manager ID
 static NSInteger ccbAnimationManagerID = 0;
 
 @implementation CCBAnimationManager
@@ -416,15 +417,17 @@ static NSInteger ccbAnimationManagerID = 0;
     if(nextFrame==numKeyframes)
         return;
     
-    // Handle Tween
-    if (tweenDuration > 0) {
-        [actions addObject:[CCActionDelay actionWithDuration:tweenDuration]];
-    }
-    
     // KeyFrames to build action sequence
     CCBKeyframe* kf0 = [keyframes objectAtIndex:startFrame];
     CCBKeyframe* kf1 = [keyframes objectAtIndex:nextFrame];
     
+    float timeFirst = kf0.time + tweenDuration;
+    
+    // Handle Tween
+    if (timeFirst > 0 && startFrame==0) {
+        [actions addObject:[CCActionDelay actionWithDuration:timeFirst]];
+    }
+
     //CCLOG(@"startFrame: %d -> nextFrame: %d, KeyFrames: %d",startFrame,nextFrame,numKeyframes);
     
     // Create Sequence

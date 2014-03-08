@@ -32,7 +32,7 @@
 
 @protocol CCBAnimationManagerDelegate <NSObject>
 
-- (void) completedAnimationSequenceNamed:(NSString*)name;
+- (void)completedAnimationSequenceNamed:(NSString*)name;
 
 @end
 
@@ -70,8 +70,8 @@
 @property (unsafe_unretained, nonatomic,readonly) NSString* runningSequenceName;
 @property (nonatomic,readonly) NSString* lastCompletedSequenceName;
 
-@property (nonatomic,readwrite) float playbackSpeed;
-@property (nonatomic,readwrite) bool paused;
+@property (nonatomic,assign) float playbackSpeed;
+@property (nonatomic,assign) bool paused;
 
 
 - (CGSize) containerSize:(CCNode*)node;
