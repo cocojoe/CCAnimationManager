@@ -10,11 +10,13 @@
 
 @interface MainScene : CCNode {
     CCBAnimationManager* _animationManager;
+    
     CCNode* _simple;
     CCNode* _beast;
     
     int _keyFrame;
     float _time;
+    bool _pause;
 }
 
 @end

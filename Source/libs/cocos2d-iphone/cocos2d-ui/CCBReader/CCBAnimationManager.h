@@ -59,7 +59,6 @@
     CCScheduler* _scheduler;
 
     NSMutableArray* _currentActions;
-    float _speed;
     
 }
 @property (nonatomic,readonly) NSMutableArray* sequences;
@@ -70,6 +69,9 @@
 @property (nonatomic,strong) NSObject<CCBAnimationManagerDelegate>* delegate;
 @property (unsafe_unretained, nonatomic,readonly) NSString* runningSequenceName;
 @property (nonatomic,readonly) NSString* lastCompletedSequenceName;
+
+@property (nonatomic,readwrite) float playbackSpeed;
+@property (nonatomic,readwrite) bool paused;
 
 
 - (CGSize) containerSize:(CCNode*)node;
@@ -91,7 +93,5 @@
 - (void)jumpToKeyFrame:(int)keyFrame;
 - (void)jumpToTime:(float)time;
 - (void)reset;
-- (void)play;
-- (void)pause;
 
 @end

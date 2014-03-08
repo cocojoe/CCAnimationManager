@@ -31,7 +31,7 @@
 {
     self = [super init];
     if (!self) return NULL;
-    
+
     return self;
 }
 

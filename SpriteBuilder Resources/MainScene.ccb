@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
 	<key>UUID</key>
-	<integer>10</integer>
+	<integer>11</integer>
 	<key>centeredOrigin</key>
 	<false/>
 	<key>currentResolution</key>
@@ -1526,7 +1526,7 @@
 			</dict>
 			<dict>
 				<key>UUID</key>
-				<integer>9</integer>
+				<integer>10</integer>
 				<key>baseClass</key>
 				<string>CCBFile</string>
 				<key>children</key>
@@ -1536,9 +1536,9 @@
 				<key>displayName</key>
 				<string>CCBFile</string>
 				<key>memberVarAssignmentName</key>
-				<string>_beast</string>
+				<string></string>
 				<key>memberVarAssignmentType</key>
-				<integer>1</integer>
+				<integer>0</integer>
 				<key>properties</key>
 				<array>
 					<dict>
@@ -1556,8 +1556,8 @@
 						<string>Position</string>
 						<key>value</key>
 						<array>
-							<real>56</real>
-							<real>111</real>
+							<real>17</real>
+							<real>106</real>
 							<integer>0</integer>
 							<integer>0</integer>
 							<integer>0</integer>
@@ -1572,7 +1572,7 @@
 						<array>
 							<real>0.25</real>
 							<real>0.25</real>
-							<false/>
+							<true/>
 							<integer>0</integer>
 						</array>
 					</dict>
@@ -1585,8 +1585,6 @@
 						<string>bluebeast_pikarun.ccb</string>
 					</dict>
 				</array>
-				<key>selected</key>
-				<true/>
 			</dict>
 		</array>
 		<key>customClass</key>
@@ -1726,9 +1724,9 @@
 			<key>name</key>
 			<string>move</string>
 			<key>offset</key>
-			<real>0.9343751072883606</real>
+			<real>0.0</real>
 			<key>position</key>
-			<real>3.2000000476837158</real>
+			<real>1.2999999523162842</real>
 			<key>resolution</key>
 			<real>30</real>
 			<key>scale</key>
