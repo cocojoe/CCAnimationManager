@@ -36,7 +36,7 @@
     else
         _keyFrame++;
     */
-    [_animationManager setPlaybackSpeed:-0.50f];
+    [_animationManager setPlaybackSpeed:-0.20f];
 }
 
 
@@ -51,16 +51,15 @@
         _time+=0.25f;
      */
     _pause=!_pause;
-    [_animationManager setPaused:_pause];
+    [_animationManager timeSeekNamed:@"move" time:2.1f];
 }
 
 - (void) pressedReset:(id)sender
 {
-    [_animationManager reset];
     CCLOG(@"pressedReset:");
     _keyFrame = 0;
     _time     = 0;
-    [_animationManager setPlaybackSpeed:1.0f];
+    [_animationManager setPlaybackSpeed:1.00f];
 }
 
 @end

@@ -73,7 +73,6 @@
 @property (nonatomic,assign) float playbackSpeed;
 @property (nonatomic,assign) bool paused;
 
-
 - (CGSize) containerSize:(CCNode*)node;
 
 - (void) addNode:(CCNode*)node andSequences:(NSDictionary*)seq;
@@ -81,17 +80,14 @@
 
 - (void) setBaseValue:(id)value forNode:(CCNode*)node propertyName:(NSString*)propName;
 
-- (void) runAnimationsForSequenceNamed:(NSString*)name tweenDuration:(float)tweenDuration;
 - (void) runAnimationsForSequenceNamed:(NSString*)name;
+- (void) runAnimationsForSequenceNamed:(NSString*)name tweenDuration:(float)tweenDuration;
 - (void) runAnimationsForSequenceId:(int)seqId tweenDuration:(float) tweenDuration;
 
 - (void) setCompletedAnimationCallbackBlock:(void(^)(id sender))b;
 
 - (void) debug;
 
-// Test Controls
-- (void)jumpToKeyFrame:(int)keyFrame;
-- (void)jumpToTime:(float)time;
-- (void)reset;
+- (void) timeSeekNamed:(NSString*)name time:(float)time;
 
 @end
