@@ -8,58 +8,45 @@
 
 #import "MainScene.h"
 
+#define SPEED_SLOW          0.25f
+#define SPEED_NORMAL        1.0f
+#define SPEED_FAST          1.75f
+
 @implementation MainScene
 
 - (void) didLoadFromCCB
 {
-    _animationManager = _simple.userObject;
-    //[_animationManager debug];
-    
-    [self pressedReset:nil];
-    _pause = NO;
+    _animationManagerSimple = _simple.userObject;
+    _animationManagerBeast  = _beast.userObject;
 }
 
-- (void) pressedMove:(id)sender
-{
-    CCLOG(@"pressedMove");
-    [_animationManager runAnimationsForSequenceNamed:@"move" tweenDuration:0];
+- (void) pressedPlay:(id)sender {
+    [_animationManagerSimple runAnimationsForSequenceNamed:@"move" tweenDuration:0];
 }
 
-- (void) pressedKF:(id)sender
-{
-    CCLOG(@"pressedKF: %d",_keyFrame);
-    
-    /*
-    [_animationManager jumpToKeyFrame:_keyFrame];
-    if(_keyFrame==5)
-        _keyFrame = 0;
-    else
-        _keyFrame++;
-    */
-    [_animationManager setPlaybackSpeed:-0.20f];
+- (void) pressedSkip:(id)sender {
+    [_animationManagerSimple timeSeekForSequenceNamed:@"move" time:2.1f];
 }
 
-
-- (void) pressedTime:(id)sender
-{
-    CCLOG(@"pressedTime: %f",_time);
-    /*
-    [_animationManager jumpToTime:_time];
-    if(_time==4)
-        _time = 0;
-    else
-        _time+=0.25f;
-     */
-    _pause=!_pause;
-    [_animationManager timeSeekNamed:@"move" time:2.1f];
+- (void) pressedSlow:(id)sender {
+    [_animationManagerBeast setPlaybackSpeed:SPEED_SLOW];
 }
 
-- (void) pressedReset:(id)sender
-{
-    CCLOG(@"pressedReset:");
-    _keyFrame = 0;
-    _time     = 0;
-    [_animationManager setPlaybackSpeed:1.00f];
+- (void) pressedNormal:(id)sender {
+    [_animationManagerBeast setPlaybackSpeed:SPEED_NORMAL];
 }
+
+- (void) pressedFast:(id)sender {
+    [_animationManagerBeast setPlaybackSpeed:SPEED_FAST];
+}
+
+- (void) pressedPauseBeast:(id)sender {
+    [_animationManagerBeast setPaused:![_animationManagerBeast paused]];
+}
+
+- (void) pressedPauseSimple:(id)sender {
+    [_animationManagerSimple setPaused:![_animationManagerSimple paused]];
+}
+
 
 @end

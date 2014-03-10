@@ -28,7 +28,7 @@
 
 @class CCBSequence;
 
-#pragma mark Delegate
+#pragma mark Animation Manager Delegate
 
 @protocol CCBAnimationManagerDelegate <NSObject>
 
@@ -36,7 +36,7 @@
 
 @end
 
-#pragma mark Action Manager
+#pragma mark Animation Manager
 
 @interface CCBAnimationManager : NSObject <CCSchedulerTarget>
 {
@@ -57,10 +57,10 @@
     void (^block)(id sender);
     
     CCScheduler* _scheduler;
-
     NSMutableArray* _currentActions;
     
 }
+
 @property (nonatomic,readonly) NSMutableArray* sequences;
 @property (nonatomic,assign) int autoPlaySequenceId;
 @property (nonatomic,unsafe_unretained) CCNode* rootNode;
@@ -86,8 +86,7 @@
 
 - (void) setCompletedAnimationCallbackBlock:(void(^)(id sender))b;
 
-- (void) debug;
-
-- (void) timeSeekNamed:(NSString*)name time:(float)time;
+- (void) timeSeekForSequenceNamed:(NSString*)name time:(float)time;
+- (void) timeSeekForSequenceId:(int)seqId time:(float)time;
 
 @end

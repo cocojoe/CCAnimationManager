@@ -9,14 +9,11 @@
 #import "CCNode.h"
 
 @interface MainScene : CCNode {
-    CCBAnimationManager* _animationManager;
+    CCBAnimationManager* _animationManagerBeast;
+    CCBAnimationManager* _animationManagerSimple;
     
     CCNode* _simple;
     CCNode* _beast;
-    
-    int _keyFrame;
-    float _time;
-    bool _pause;
 }
 
 @end

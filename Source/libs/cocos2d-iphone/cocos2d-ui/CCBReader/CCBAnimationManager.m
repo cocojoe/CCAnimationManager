@@ -63,11 +63,12 @@ static NSInteger ccbAnimationManagerID = 0;
     // Scheduler
     _scheduler = [[CCDirector sharedDirector] scheduler];
     [_scheduler scheduleTarget:self];
+    [_scheduler setPaused:NO target:self];
     
     // Current Sequence Actions
     _currentActions = [[NSMutableArray alloc] init];
     _playbackSpeed  = 1.0f;
-    [self setPaused:NO];
+    _paused         = NO;
     
     return self;
 }
@@ -76,12 +77,6 @@ static NSInteger ccbAnimationManagerID = 0;
 {
 	return 0;
 }
-
--(void) setPaused:(bool)paused {
-    [_scheduler setPaused:paused target:self];
-    _paused = paused;
-}
-
 
 - (CGSize) containerSize:(CCNode*)node
 {
@@ -166,7 +161,7 @@ static NSInteger ccbAnimationManagerID = 0;
     
     if ([name isEqualToString:@"rotation"])
     {
-        return [CCActionRotateTo actionWithDuration:duration angle:[kf1.value floatValue]];
+        return [CCActionRotateBy actionWithDuration:duration angle:[kf1.value floatValue]];
     }
     else if ([name isEqualToString:@"rotationalSkewX"])
     {
@@ -565,6 +560,7 @@ static NSInteger ccbAnimationManagerID = 0;
     runningSequence = [self sequenceFromSequenceId:seqId];
     
     [_scheduler setPaused:NO target:self];
+    _paused = NO;
 }
 
 - (void) runAnimationsForSequenceNamed:(NSString*)name tweenDuration:(float)tweenDuration
@@ -628,8 +624,6 @@ static NSInteger ccbAnimationManagerID = 0;
     // Callbacks
     [delegate completedAnimationSequenceNamed:lastCompletedSequenceName];
     if (block) block(self);
-
-    [self setPaused:YES];
     
     // Run next sequence if callbacks did not start a new sequence
     if (runningSequence == NULL && nextSeqId != -1)
@@ -659,11 +653,15 @@ static NSInteger ccbAnimationManagerID = 0;
     CCLOG(@"nodeSequences: %@", nodeSequences);
 }
 
-- (void)timeSeekNamed:(NSString*)name time:(float)time {
-    
+- (void)timeSeekForSequenceNamed:(NSString*)name time:(float)time {
     int seqId = [self sequenceIdForSequenceNamed:name];
+    [self timeSeekForSequenceId:seqId time:time];
+}
+
+- (void) timeSeekForSequenceId:(int)seqId time:(float)time {
+    NSAssert(seqId != -1, @"Sequence id %d couldn't be found",seqId);
     
-    [self setPaused:YES];
+    [_scheduler setPaused:YES target:self];
     [self clearAllActions];
     
     // Contains all Sequence Propertys / Keyframe
@@ -675,6 +673,19 @@ static NSInteger ccbAnimationManagerID = 0;
         NSDictionary* seqNodeProps = [seqs objectForKey:[NSNumber numberWithInt:seqId]];
         
         // Reset Nodes, Create Actions
+        NSMutableSet* seqNodePropNames = [NSMutableSet set];
+        
+        // Reset the nodes that may have been changed by other timelines
+        NSDictionary* nodeBaseValues = [baseValues objectForKey:nodePtr];
+        for (NSString* propName in nodeBaseValues) {
+            if (![seqNodePropNames containsObject:propName]) {
+                id value = [nodeBaseValues objectForKey:propName];
+                if (value) {
+                    [self setAnimatedProperty:propName forNode:node toValue:value tweenDuration:0];
+                }
+            }
+        }
+        
         for (NSString* propName in seqNodeProps)
         {
             CCBSequenceProperty* seqProp = [seqNodeProps objectForKey:propName];
@@ -682,6 +693,12 @@ static NSInteger ccbAnimationManagerID = 0;
             
             // No KeyFrames Found
             if([keyFrames count]==0) {
+                continue;
+            }
+            
+            // Last Sequence KeyFrame Ended Before Seek Time / Set State
+            if([keyFrames count]==1) {
+                [self setKeyFrameForNode:node sequenceProperty:seqProp tweenDuration:0 keyFrame:[[keyFrames objectAtIndex:0] intValue]];
                 continue;
             }
             
@@ -710,7 +727,7 @@ static NSInteger ccbAnimationManagerID = 0;
             // Fast forward to time point
             [animSequence setTag:animationManagerId];
             [animSequence startWithTarget:node];
-            [animSequence step:0];
+            [animSequence step:0]; // First Tick
             [animSequence step:timeFoward];
             [_currentActions addObject:animSequence];
             
@@ -721,7 +738,7 @@ static NSInteger ccbAnimationManagerID = 0;
     [self addSequenceCallBacks:seqId tweenDuration:0 startTime:time];
     runningSequence = [self sequenceFromSequenceId:seqId];
     
-    [self setPaused:NO];
+    [_scheduler setPaused:NO target:self];
 }
 
 - (NSMutableArray*)findFrames:(float)time sequenceProperty:(CCBSequenceProperty*) seqProp{
@@ -733,7 +750,8 @@ static NSInteger ccbAnimationManagerID = 0;
     NSUInteger frameCount = [seqProp.keyframes count];
     
     // Find KeyFrames
-    for (int i = 0; i < frameCount; i++) {
+    int i;
+    for (i = 0; i < frameCount; i++) {
         CCBKeyframe* currentKey = [seqProp.keyframes objectAtIndex:i];
         
         if (currentKey.time>time) {
@@ -745,6 +763,11 @@ static NSInteger ccbAnimationManagerID = 0;
         }
         
         startKeyFrame = [seqProp.keyframes objectAtIndex:i];
+    }
+    
+    // No Frames
+    if([result count]==0) {
+        [result addObject:[NSNumber numberWithInteger:(i-1)]];
     }
 
     return result;
@@ -774,6 +797,9 @@ static NSInteger ccbAnimationManagerID = 0;
 }
 
 - (void)update:(CCTime)delta {
+    
+    if(_paused)
+        return;
     
     NSArray *actionsCopy = [_currentActions copy];
     
