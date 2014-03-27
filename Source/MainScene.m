@@ -18,6 +18,7 @@
 {
     _animationManagerSimple = _simple.userObject;
     _animationManagerBeast  = _beast.userObject;
+    [_animationManagerBeast setPaused:YES];
 }
 
 - (void) pressedPlay:(id)sender {
@@ -25,7 +26,9 @@
 }
 
 - (void) pressedSkip:(id)sender {
-    [_animationManagerSimple timeSeekForSequenceNamed:@"move" time:2.1f];
+    //[_animationManagerSimple timeSeekForSequenceNamed:@"move" time:2.1f];
+    [_animationManagerSimple setReverse:![_animationManagerSimple reverse]];
+    
 }
 
 - (void) pressedSlow:(id)sender {

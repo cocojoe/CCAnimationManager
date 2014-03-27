@@ -282,6 +282,8 @@
     
     bool _rotateX;
     bool _rotateY;
+    
+    bool _simple;
 }
 
 /**
@@ -293,6 +295,28 @@
  *  @return New rotate action.
  */
 + (id)actionWithDuration:(CCTime)duration angle:(float)angle;
+
+/**
+ *  Creates the action.
+ *
+ *  @param duration Action duration.
+ *  @param angle    Angle to rotate to (degrees).
+ *  @param direct   Simple rotation, no smart checks.
+ *
+ *  @return New rotate action.
+ */
++ (id)actionWithDuration:(CCTime)duration angle:(float)angle simple:(bool)simple;
+
+/**
+ *  Initializes the action.
+ *
+ *  @param duration Action duration.
+ *  @param angle    Angle to rotate to (degrees).
+ *  @param direct   Simple rotation, no smart checks.
+ *
+ *  @return New rotate action
+ */
+- (id)initWithDuration:(CCTime)duration angle:(float)angle simple:(bool)simple;
 
 /**
  *  Initializes the action.
