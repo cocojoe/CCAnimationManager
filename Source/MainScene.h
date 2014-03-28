@@ -10,9 +10,6 @@
 
 @interface MainScene : CCNode {
     CCBAnimationManager* _animationManagerBeast;
-    CCBAnimationManager* _animationManagerSimple;
-    
-    CCNode* _simple;
     CCNode* _beast;
 }
 

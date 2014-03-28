@@ -8,26 +8,20 @@
 
 #import "MainScene.h"
 
-#define SPEED_SLOW          -0.25f
+#define SPEED_SLOW          0.25f
 #define SPEED_NORMAL        1.0f
-#define SPEED_FAST          1.75f
+#define SPEED_FAST          1.50f
 
 @implementation MainScene
 
 - (void) didLoadFromCCB
 {
-    _animationManagerSimple = _simple.userObject;
     _animationManagerBeast  = _beast.userObject;
-    //[_animationManagerBeast setPaused:YES];
 }
 
-- (void) pressedPlay:(id)sender {
-    [_animationManagerSimple runAnimationsForSequenceNamed:@"move" tweenDuration:0];
-}
 
-- (void) pressedSkip:(id)sender {
-    //[_animationManagerSimple timeSeekForSequenceNamed:@"move" time:2.1f];
-    [_animationManagerSimple setPlaybackSpeed:[_animationManagerSimple playbackSpeed]*-1];
+- (void) pressedReverse:(id)sender {
+    [_animationManagerBeast setPlaybackSpeed:[_animationManagerBeast playbackSpeed]*-1];
     
 }
 
@@ -45,10 +39,6 @@
 
 - (void) pressedPauseBeast:(id)sender {
     [_animationManagerBeast setPaused:![_animationManagerBeast paused]];
-}
-
-- (void) pressedPauseSimple:(id)sender {
-    [_animationManagerSimple setPaused:![_animationManagerSimple paused]];
 }
 
 

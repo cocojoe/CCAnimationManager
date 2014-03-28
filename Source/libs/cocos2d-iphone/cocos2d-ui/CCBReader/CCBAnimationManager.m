@@ -627,8 +627,28 @@ static NSInteger ccbAnimationManagerID = 0;
     CCLOG(@"nodeSequences: %@", _nodeSequences);
 }
 
+- (void) setPlaybackSpeed:(float)playbackSpeed  {
+    
+    // Backward Motion (Backwards)
+    if(_playbackSpeed>0 && playbackSpeed<0 && _runningSequence) {
+        [self timeSeekStaticForSequenceId:_runningSequence.sequenceId time:_runningSequence.time];
+    }
+    
+    // Forward Motion
+    if(_playbackSpeed<0 && playbackSpeed>0 && _runningSequence) {
+        [self timeSeekForSequenceId:_runningSequence.sequenceId time:_runningSequence.time];
+    }
+    
+    _playbackSpeed = playbackSpeed;
+}
+
 - (void) timeSeekStaticForSequenceId:(int)seqId time:(float)time {
     NSAssert(seqId != -1, @"Sequence id %d couldn't be found",seqId);
+    
+    // Reverse Loop Hack
+    if(_playbackSpeed<0 && time<0 && _runningSequence.chainedSequenceId==_runningSequence.sequenceId) {
+        time = _runningSequence.duration;
+    }
     
     [self clearAllActions];
     
