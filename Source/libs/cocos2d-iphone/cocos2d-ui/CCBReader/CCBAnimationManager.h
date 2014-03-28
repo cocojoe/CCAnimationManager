@@ -85,9 +85,6 @@
 // Pause.
 @property (nonatomic,assign) bool paused;
 
-// Reverse.
-@property (nonatomic,assign) bool reverse;
-
 // (CCB) Node Management
 - (CGSize) containerSize:(CCNode*)node;
 - (void) addNode:(CCNode*)node andSequences:(NSDictionary*)seq;
