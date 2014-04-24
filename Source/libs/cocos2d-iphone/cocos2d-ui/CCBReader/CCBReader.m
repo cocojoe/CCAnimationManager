@@ -105,6 +105,11 @@
 
 - (void) dealloc
 {
+   // if(animationManager) {
+   //     [animationManager performSelector:@selector(cleanup)];
+   //     animationManager = nil;
+   // }
+    
     bytes = NULL;
 }
 

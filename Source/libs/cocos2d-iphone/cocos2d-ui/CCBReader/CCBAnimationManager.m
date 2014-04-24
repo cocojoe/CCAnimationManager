@@ -48,7 +48,7 @@ static NSInteger ccbAnimationManagerID = 0;
     
     _animationManagerId = ccbAnimationManagerID;
     ccbAnimationManagerID++;
-    
+    CCLOG(@"init: %d",(int)_animationManagerId);
     _sequences = [[NSMutableArray alloc] init];
     _nodeSequences = [[NSMutableDictionary alloc] init];
     _baseValues = [[NSMutableDictionary alloc] init];
@@ -616,9 +616,15 @@ static NSInteger ccbAnimationManagerID = 0;
     block = [b copy];
 }
 
-- (void) dealloc
-{
-    self.rootNode = NULL;
+- (void)cleanup {
+    CCLOG(@"cleanup: %d",(int)_animationManagerId);
+	[_scheduler unscheduleTarget:self];
+    [self clearAllActions];
+}
+
+- (void)dealloc {
+    CCLOG(@"dealloc: %d",(int)_animationManagerId);
+    _rootNode = NULL;
 }
 
 - (void)debug

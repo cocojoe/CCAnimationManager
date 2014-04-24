@@ -21,7 +21,8 @@
 
 
 - (void) pressedReverse:(id)sender {
-    [_animationManagerBeast setPlaybackSpeed:[_animationManagerBeast playbackSpeed]*-1];
+    //[_animationManagerBeast setPlaybackSpeed:[_animationManagerBeast playbackSpeed]*-1];
+    [[CCDirector sharedDirector] replaceScene:[CCBReader loadAsScene:@"MainScene"]];
     
 }
 

@@ -196,6 +196,12 @@ static NSUInteger globalOrderOfArrival = 1;
 
 	// timers
 	[_children makeObjectsPerformSelector:@selector(cleanup)];
+    
+    if([_userObject respondsToSelector:@selector(cleanup)]) {
+        [_userObject performSelector:@selector(cleanup)];
+    }
+    _userObject = nil;
+
 }
 
 - (NSString*) description
